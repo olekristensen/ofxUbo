@@ -15,12 +15,12 @@ bool ofxUboSingeltons::init(){
 	spGLSLTypeSize[GL_FLOAT_VEC2] = sizeof(float)*2;
 	spGLSLTypeSize[GL_FLOAT_VEC3] = sizeof(float)*3;
 	spGLSLTypeSize[GL_FLOAT_VEC4] = sizeof(float)*4;
-    
+
 	spGLSLTypeSize[GL_DOUBLE] = sizeof(double);
 	spGLSLTypeSize[GL_DOUBLE_VEC2] = sizeof(double)*2;
 	spGLSLTypeSize[GL_DOUBLE_VEC3] = sizeof(double)*3;
 	spGLSLTypeSize[GL_DOUBLE_VEC4] = sizeof(double)*4;
-    
+
 	spGLSLTypeSize[GL_SAMPLER_1D] = sizeof(int);
 	spGLSLTypeSize[GL_SAMPLER_2D] = sizeof(int);
 	spGLSLTypeSize[GL_SAMPLER_3D] = sizeof(int);
@@ -65,12 +65,12 @@ bool ofxUboSingeltons::init(){
 	spGLSLTypeSize[GL_INT_VEC3] = sizeof(int)*3;
 	spGLSLTypeSize[GL_BOOL_VEC4] = sizeof(int)*4;
 	spGLSLTypeSize[GL_INT_VEC4] = sizeof(int)*4;
-    
+
 	spGLSLTypeSize[GL_UNSIGNED_INT] = sizeof(int);
 	spGLSLTypeSize[GL_UNSIGNED_INT_VEC2] = sizeof(int)*2;
 	spGLSLTypeSize[GL_UNSIGNED_INT_VEC3] = sizeof(int)*2;
 	spGLSLTypeSize[GL_UNSIGNED_INT_VEC4] = sizeof(int)*2;
-    
+
 	spGLSLTypeSize[GL_FLOAT_MAT2] = sizeof(float)*4;
 	spGLSLTypeSize[GL_FLOAT_MAT3] = sizeof(float)*9;
 	spGLSLTypeSize[GL_FLOAT_MAT4] = sizeof(float)*16;
@@ -83,7 +83,7 @@ bool ofxUboSingeltons::init(){
 	spGLSLTypeSize[GL_DOUBLE_MAT2] = sizeof(double)*4;
 	spGLSLTypeSize[GL_DOUBLE_MAT3] = sizeof(double)*9;
 	spGLSLTypeSize[GL_DOUBLE_MAT4] = sizeof(double)*16;
-    
+
     spGLSLType[GL_FLOAT] = "GL_FLOAT";
 	spGLSLType[GL_FLOAT_VEC2] = "GL_FLOAT_VEC2";
 	spGLSLType[GL_FLOAT_VEC3] = "GL_FLOAT_VEC3";
@@ -152,7 +152,7 @@ bool ofxUboSingeltons::init(){
 	spGLSLType[GL_DOUBLE_MAT2] = "GL_DOUBLE_MAT2";
 	spGLSLType[GL_DOUBLE_MAT3] = "GL_DOUBLE_MAT3";
 	spGLSLType[GL_DOUBLE_MAT4] = "GL_DOUBLE_MAT4";
-    
+
     matrixRowSize[GL_FLOAT_MAT2] = sizeof(float) * 2;
     matrixRowSize[GL_FLOAT_MAT3] = sizeof(float) * 3;
     matrixRowSize[GL_FLOAT_MAT4] = sizeof(float) * 4;
@@ -165,8 +165,8 @@ bool ofxUboSingeltons::init(){
     matrixRowSize[GL_DOUBLE_MAT2] = sizeof(double) * 2;
     matrixRowSize[GL_DOUBLE_MAT3] = sizeof(double) * 3;
     matrixRowSize[GL_DOUBLE_MAT4] = sizeof(double) * 4;
-    
-    
+
+
     matrixRowCount[GL_FLOAT_MAT2] =  2;
     matrixRowCount[GL_FLOAT_MAT3] =  3;
     matrixRowCount[GL_FLOAT_MAT4] =  4;
@@ -179,7 +179,7 @@ bool ofxUboSingeltons::init(){
     matrixRowCount[GL_DOUBLE_MAT2] =  2;
     matrixRowCount[GL_DOUBLE_MAT3] =  3;
     matrixRowCount[GL_DOUBLE_MAT4] =  4;
-    
+
     return true;
 }
 
@@ -215,7 +215,7 @@ ostream& operator<<(ostream& stream, const ofxUboLayout& layout){
 
 
 ofxUboShader::ofxUboShader():ofShader(){
-    
+
 }
 
 //--------------------------------------------------------------
@@ -228,7 +228,8 @@ ofxUboShader::~ofxUboShader(){
 
 ofxUboShader::ofxUboShader(const ofxUboShader &mom):ofShader(mom){
     ubos = mom.ubos;
-    for (auto it = ubos.begin(); it!=ubos.end(); it++) {
+    std::map<string, shared_ptr<ofxUboBase> >::iterator it;
+    for (it = ubos.begin(); it!= ubos.end(); it++) {
         const string &name = it->first;
         shared_ptr<ofxUboBase> uboRef = it->second;
         bindToLocation(name, uboRef->getBindingPoint());
@@ -240,7 +241,8 @@ ofxUboShader::ofxUboShader(const ofxUboShader &mom):ofShader(mom){
 ofxUboShader& ofxUboShader::operator=(const ofxUboShader &mom){
     ofShader::operator=(mom);
     ubos = mom.ubos;
-    for (auto it = ubos.begin(); it!=ubos.end(); it++) {
+    std::map<string, shared_ptr<ofxUboBase> >::iterator it;
+    for (it = ubos.begin(); it!= ubos.end(); it++) {
         const string &name = it->first;
         shared_ptr<ofxUboBase> uboRef = it->second;
         bindToLocation(name, uboRef->getBindingPoint());
@@ -267,7 +269,7 @@ void ofxUboShader::bindToLocation(const string &blockName, GLuint location){
 ofxUboLayout ofxUboShader::getLayout(const string &blockName){
     ofxUboLayout layout;
     layout.blockName = blockName;
-    
+
     // get block Index
     GLuint blockIndex = glGetUniformBlockIndex(getProgram(),blockName.c_str());
     if (blockIndex == GL_INVALID_INDEX) {
@@ -277,40 +279,40 @@ ofxUboLayout ofxUboShader::getLayout(const string &blockName){
         layout.size = -99;
         return layout;
     }
-    
+
     // get the Size of the Uniform Block
     int uboSize;
     glGetActiveUniformBlockiv(getProgram(), blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &uboSize);
     layout.size = uboSize;
-    
+
     // get the number of active uniforms of the Uniform Block
     int activeUnif;
     glGetActiveUniformBlockiv(getProgram(), blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &activeUnif);
-    
+
     // get each unifom inside the Uniform block
     unsigned int *indices = new unsigned int[activeUnif];
     glGetActiveUniformBlockiv(getProgram(), blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, (int *)indices);
-    
+
     // loop through all active Uniforms and get each, uniform's name,type,offset,size,arrayStride,and MatrixStride
     int actualLen, index, uniType,uniSize, uniMatStride, uniArrayStride, uniOffset;
 	char name[256];
-    
+
     for (int k = 0; k < activeUnif; ++k) {
 		glGetActiveUniformName(getProgram(), indices[k], 256, &actualLen, name);
         glGetActiveUniformsiv(getProgram(), 1, &indices[k], GL_UNIFORM_TYPE, &uniType);
         glGetActiveUniformsiv(getProgram(), 1, &indices[k], GL_UNIFORM_OFFSET, &uniOffset);
-        
+
         // This function retrives array length, not the actual size;
         glGetActiveUniformsiv(getProgram(), 1, &indices[k], GL_UNIFORM_SIZE, &uniSize);
         glGetActiveUniformsiv(getProgram(), 1, &indices[k], GL_UNIFORM_ARRAY_STRIDE, &uniArrayStride);
         glGetActiveUniformsiv(getProgram(), 1, &indices[k], GL_UNIFORM_MATRIX_STRIDE, &uniMatStride);
-        
+
         int auxSize;
         if (uniArrayStride > 0)
             auxSize = uniArrayStride * uniSize;
-        
+
         else if (uniMatStride > 0) {
-            
+
             switch(uniType) {
                 case GL_FLOAT_MAT2:
                 case GL_FLOAT_MAT2x3:
@@ -334,7 +336,7 @@ ofxUboLayout ofxUboShader::getLayout(const string &blockName){
         }
         else
             auxSize = ofxUboSingeltons::spGLSLTypeSize[uniType];
-        
+
         ofxUniformInfo info;
         info.name = name;
         info.type = uniType;
@@ -347,7 +349,7 @@ ofxUboLayout ofxUboShader::getLayout(const string &blockName){
     // Sort unifoms based on offset. Some opengl drivers seem to fetch uniforms in a non sequential order.
     // The offset data is still correct but glGetActiveUniformBlockiv feeds you uniforms in a random order.
     ofSort(layout.uniformData);
-    
+
     delete indices;
     return layout;
 }
